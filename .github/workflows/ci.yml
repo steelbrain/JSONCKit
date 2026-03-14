@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test (Swift ${{ matrix.swift }})
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        swift: ["6.0"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: ${{ matrix.swift }}
+      - name: Build
+        run: swift build
+      - name: Test
+        run: swift test
+
+  lint:
+    name: Lint
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: SwiftLint
+        run: |
+          brew install swiftlint
+          swiftlint lint --strict
